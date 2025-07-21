@@ -51,3 +51,47 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+// GET /api/users/:id
+exports.findUserById = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// PUT /api/users/:id
+exports.updateUser = async (req, res) => {
+  try {
+    const [updated] = await User.update(req.body, {
+      where: { id: req.params.id },
+    });
+    if (updated) {
+      const user = await User.findByPk(req.params.id);
+      res.json({ message: "User updated", user });
+    } else {
+      res.status(404).json({ message: "User not found or no changes" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// DELETE /api/users/:id
+exports.deleteUser = async (req, res) => {
+  try {
+    const deleted = await User.destroy({
+      where: { id: req.params.id },
+    });
+    if (deleted) {
+      res.json({ message: "User deleted" });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

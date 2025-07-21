@@ -27,5 +27,22 @@ module.exports = (app) => {
     }
   });
 
+
+  router.get("/table/:formName", async (req, res) => {
+  const { formName } = req.params;
+  try {
+    const [results] = await sequelize.query(
+      `SELECT action, method, endpoint_url
+       FROM form_endpoints
+       WHERE form_name = ?`,
+      { replacements: [formName] }
+    );
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
   app.use("/api/config", router);
 };
